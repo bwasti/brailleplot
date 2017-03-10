@@ -1,6 +1,3 @@
-// gcc brailleplot.c -o brailleplot -std=c99
-// python -c "import math; print('\n'.join(['{} {}'.format(i, math.sin(i/20.0)) for i in range(0, 400)]))" | ./brailleplot
-// open https://u.teknik.io/QWvJx.png
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +18,7 @@ wchar_t to_braille(unsigned char byte) {
 
 unsigned char from_braille(wchar_t c) {
   char byte = (c - 10240) & 0xFF;
-  return 
+  return
   ((byte << 7) & (1 << 7)) |
   ((byte << 3) & (1 << 6)) |
   ((byte << 4) & (1 << 5)) |
@@ -50,18 +47,18 @@ int main(int argc, char* argv[]) {
     sscanf(argv[1], "%d", &h);
     sscanf(argv[2], "%d", &w);
   }
-	h = h / 3 * 3;
-	w = w / 2 * 2;
+  h = h / 3 * 3;
+  w = w / 2 * 2;
   char* buffer = (char*)calloc(h * w, sizeof(char));
 
   float(*plot)[2] = (float(*)[2])calloc(10, sizeof(float) * 2);
   int num_data = 0;
   int max_data = 10;
-	int x, y;
+  int x, y;
 
-	while (scanf("%f %f", &(plot[num_data][0]), &(plot[num_data][1])) == 2) {
+  while (scanf("%f %f", &(plot[num_data][0]), &(plot[num_data][1])) == 2) {
     if (++num_data > max_data / 2) {
-			max_data *=2;
+      max_data *=2;
       plot = realloc(plot, max_data * 2 * sizeof(float));
     }
   }
@@ -73,14 +70,14 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < num_data; ++i) {
     if (plot[i][1] < min_y) {
       min_y = plot[i][1];
-		} else if (plot[i][1] > max_y) {
-			max_y = plot[i][1];
-		}
+    } else if (plot[i][1] > max_y) {
+      max_y = plot[i][1];
+    }
     if (plot[i][0] < min_x) {
       min_x = plot[i][0];
-		} else if (plot[i][0] > max_x) {
-			max_x = plot[i][0];
-		}
+    } else if (plot[i][0] > max_x) {
+      max_x = plot[i][0];
+    }
   }
 
   for (int i = 0; i < num_data; ++i) {
@@ -89,20 +86,20 @@ int main(int argc, char* argv[]) {
     dot(((w - 1) * (plot[i][0] - min_x)) / scale_x, ((h - 1) * (plot[i][1] - min_y)) / scale_y);
   }
 
-	for (int i = 0; i + 2 < h; i+=3) {
-		for (int j = 0; j + 1 < w; j+=2) {
-			wchar_t c = (wchar_t)10240;
-			for (int _i = 0; _i < 3; ++_i) {
-				for (int _j = 0; _j < 2; ++_j) {
-					if (buffer[(i + _i) * w + (j + _j)]) {
-						c = add_pixel(c, 2-_i, 1-_j, 1);
-					}
-				}
-			}
-			wprintf(L"%C", c);
-		}
-		wprintf(L"\n");
-	}
+  for (int i = 0; i + 2 < h; i+=3) {
+    for (int j = 0; j + 1 < w; j+=2) {
+      wchar_t c = (wchar_t)10240;
+      for (int _i = 0; _i < 3; ++_i) {
+        for (int _j = 0; _j < 2; ++_j) {
+          if (buffer[(i + _i) * w + (j + _j)]) {
+            c = add_pixel(c, 2-_i, 1-_j, 1);
+          }
+        }
+      }
+      wprintf(L"%C", c);
+    }
+    wprintf(L"\n");
+  }
   free(buffer);
   free(plot);
 }
